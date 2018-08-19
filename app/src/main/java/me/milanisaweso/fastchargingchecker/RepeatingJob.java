@@ -1,21 +1,21 @@
 package me.milanisaweso.fastchargingchecker;
 
-import android.annotation.TargetApi;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.PersistableBundle;
 
 public class RepeatingJob {
     private JobScheduler jobScheduler;
     private JobInfo.Builder jobBuilder;
+    public static final int CHARGING_NOT_REQUIRED = 0;
+    public static final int CHARGING_REQUIRED = 1;
 
-    public RepeatingJob(Context context) {
+    public RepeatingJob(Context context, int jobIdentifier) {
         jobScheduler = (JobScheduler) context.getApplicationContext()
                 .getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
-        jobBuilder = new JobInfo.Builder(0,
+        jobBuilder = new JobInfo.Builder(jobIdentifier,
                 new ComponentName(context, MyService.class));
     }
 
@@ -31,14 +31,6 @@ public class RepeatingJob {
 
     public RepeatingJob setMinimumLatency(int milliseconds) {
         jobBuilder.setMinimumLatency(milliseconds);
-        return this;
-    }
-
-    @TargetApi(22)
-    public RepeatingJob setBooleanArgument(Boolean requiresCharging) {
-        PersistableBundle bundle = new PersistableBundle();
-        bundle.putBoolean("requiresCharging", requiresCharging);
-        jobBuilder.setExtras(bundle);
         return this;
     }
 

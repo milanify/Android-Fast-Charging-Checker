@@ -1,32 +1,38 @@
 package me.milanisaweso.fastchargingchecker;
 
-import android.annotation.TargetApi;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.util.Log;
 
 public class MyService extends JobService {
+
     public MyService() {}
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
+        final int MINIMUM_SECONDS_TO_DELAY_JOB = 10;
         ChargingUtility chargingUtility = new ChargingUtility(this);
 
-        boolean requiresCharging = (boolean) jobParameters.getExtras().get("requiresCharging");
-        System.out.println("Test was called with requiresCharging " + requiresCharging);
+        int jobType = jobParameters.getJobId();
+        Log.i("Service","Test was called with jobType " + jobType);
 
-        // If requires charging == true, do job to check notifications
+        if(jobType == RepeatingJob.CHARGING_REQUIRED) {
+            Log.i("Service","Plugged in for the first time! Doing notification check.");
+            //logic to check notifications
 
+            MainActivity.scheduleChargingNotRequiredJob(this, MINIMUM_SECONDS_TO_DELAY_JOB);
 
-        if(chargingUtility.isCharging() && !requiresCharging) {
-            System.out.println("Phone is AC charging, set up longer wait");
+        } else if(jobType == RepeatingJob.CHARGING_NOT_REQUIRED && chargingUtility.isCharging()) {
+            Log.i("Service","Charging not required for this job, but we are still charging..." +
+                    "do nothing except repeat this not required job");
 
-            new RepeatingJob(this).setChargingRequired(false).setPersisted(true)
-                    .setMinimumLatency(10 * 1000).setBooleanArgument(false).buildJobAndSchedule();
-        } else {
-            System.out.println("Phone is not charging via AC, starting required charging job");
+            MainActivity.scheduleChargingNotRequiredJob(this, MINIMUM_SECONDS_TO_DELAY_JOB);
 
-            new RepeatingJob(this).setChargingRequired(true).setPersisted(true)
-                    .setBooleanArgument(true).buildJobAndSchedule();
+        } else if (jobType == RepeatingJob.CHARGING_NOT_REQUIRED && !chargingUtility.isCharging()) {
+            Log.i("Service","Charging not required for this job, and we aren't charging..." +
+                    "start the intial job again that waits for a charge!");
+
+            MainActivity.scheduleChargingRequiredJob(this);
         }
 
         jobFinished(jobParameters, false);
