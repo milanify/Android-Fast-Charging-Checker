@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             new RepeatingJob(this).setChargingRequired(true).setPersisted(true)
-            .setMinimumLatency(5000).buildJobAndSchedule();
+            .setBooleanArgument(true).buildJobAndSchedule();
         }
 
         //*after job detects charging or onPlugged intent received*
@@ -21,13 +21,16 @@ public class MainActivity extends AppCompatActivity {
         //if chargingThroughWallCharger && !fastCharging
         //	sendNotificationSound(3);
         //
-        //1st time running:
-        //when phone is charging:
-        //	doJob()
-        //	startJobThatSetRequiresCharging(false)
         //
-        //when phone is either charging or not:
-        //	if(phone is charging) do nothing, repeat after 5 mins
-        //	if(phone is not charging) start 1st job
+        //
+        //plugged in for first time->setChargingRequiredIsTrue
+        //if(setChargingRequiredTrue)
+        // doesNotificationCheck
+        // startJobThatRequiresChargingFalse
+        //
+        //->setChargingRequiredFalse
+        //if setChargingRequiredFalse and isCharging then do nothing, and repeat startJobThatRequiresChargingFalse
+        //
+        //else if setChargingRequiredFalse and NotCharging then start first job
     }
 }
