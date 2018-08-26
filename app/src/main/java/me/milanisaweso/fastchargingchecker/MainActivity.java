@@ -18,9 +18,10 @@ public class MainActivity extends AppCompatActivity {
 
         //*after job detects charging or onPlugged intent received*
         //
-        //if chargingThroughWallCharger && !fastCharging
+        //if(Notifications detected "Your device is charging slowly")
         //	sendNotificationSound(3);
         //
+        //Logic for notifications should be in a separate class
     }
 
     public static void scheduleChargingRequiredJob(Context context) {

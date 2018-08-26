@@ -14,7 +14,7 @@ public class MyService extends JobService {
         ChargingUtility chargingUtility = new ChargingUtility(this);
 
         int jobType = jobParameters.getJobId();
-        Log.i("Service","Test was called with jobType " + jobType);
+        Log.i("Service","Job was called with jobType " + jobType);
 
         if(jobType == RepeatingJob.CHARGING_REQUIRED) {
             Log.i("Service","Plugged in for the first time! Doing notification check.");
