@@ -1,6 +1,7 @@
 package me.milanisaweso.fastchargingchecker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,10 @@ public class MainActivity extends AppCompatActivity {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             scheduleChargingRequiredJob(this);
         }
+
+        //startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
+
+        //Intent intent=new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
 
         //*after job detects charging or onPlugged intent received*
         //

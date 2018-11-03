@@ -1,7 +1,10 @@
 package me.milanisaweso.fastchargingchecker;
 
+import android.app.NotificationManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.service.notification.NotificationListenerService;
+import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 public class MyService extends JobService {
@@ -18,6 +21,7 @@ public class MyService extends JobService {
 
         if(jobType == RepeatingJob.CHARGING_REQUIRED) {
             Log.i("Service","Plugged in for the first time! Doing notification check.");
+
             //logic to check notifications
 
             MainActivity.scheduleChargingNotRequiredJob(this, MINIMUM_SECONDS_TO_DELAY_JOB);
@@ -30,7 +34,7 @@ public class MyService extends JobService {
 
         } else if (jobType == RepeatingJob.CHARGING_NOT_REQUIRED && !chargingUtility.isCharging()) {
             Log.i("Service","Charging not required for this job, and we aren't charging..." +
-                    "start the intial job again that waits for a charge!");
+                    "start the initial job again that waits for a charge!");
 
             MainActivity.scheduleChargingRequiredJob(this);
         }
