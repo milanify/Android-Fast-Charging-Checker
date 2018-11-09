@@ -7,6 +7,8 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
+import java.util.HashSet;
+
 public class NotificationService extends NotificationListenerService {
     public static String TAG = NotificationService.class.getSimpleName();
     private static NotificationService self = null;
@@ -29,14 +31,22 @@ public class NotificationService extends NotificationListenerService {
         }
     }
 
-    public void getNotifications() {
+    public HashSet<String> getNotifications() {
         StatusBarNotification[] statusBarNotifications = getActiveNotifications();
+        HashSet<String> hashSet = new HashSet<>();
 
         for(StatusBarNotification status : statusBarNotifications) {
-            Log.i(TAG, "ID:" + status.getId());
-            Log.i(TAG, "Posted by:" + status.getPackageName());
-            Log.i(TAG, "tickerText:" + status.getNotification().tickerText);
+            if(status.getPackageName().equalsIgnoreCase("android")) {
+                hashSet.add(status.getNotification().tickerText.toString());
+                hashSet.add(status.getNotification().extras.getString("android.text"));
+            }
         }
+
+        for(String s : hashSet) {
+            Log.i(TAG, "HashSet contains " + s);
+        }
+
+        return hashSet;
     }
 
     @Override
