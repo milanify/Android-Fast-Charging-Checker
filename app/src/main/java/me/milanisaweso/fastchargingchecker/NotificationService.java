@@ -9,8 +9,15 @@ import android.util.Log;
 
 public class NotificationService extends NotificationListenerService {
     public static String TAG = NotificationService.class.getSimpleName();
+    private static NotificationService self = null;
 
-    public NotificationService() {}
+    public NotificationService() {
+        self = this;
+    }
+
+    public static NotificationService getNotificationService() {
+        return self;
+    }
 
     @Override
     @TargetApi(Build.VERSION_CODES.N)
@@ -20,19 +27,9 @@ public class NotificationService extends NotificationListenerService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             getActiveNotifications();
         }
-        Log.d(TAG, "Listener connected");
     }
 
-    @Override
-    public void onNotificationPosted(StatusBarNotification sbn){
-        /*StatusBarNotification[] statusBarNotification = getActiveNotifications();
-        for(StatusBarNotification status : statusBarNotification) {
-            Log.i(TAG, "ID:" + status.getId());
-            Log.i(TAG, "Posted by:" + status.getPackageName());
-            Log.i(TAG, "tickerText:" + status.getNotification().tickerText);
-        }*/
-        Log.i(TAG, "Notification received");
-
+    public void getNotifications() {
         StatusBarNotification[] statusBarNotifications = getActiveNotifications();
 
         for(StatusBarNotification status : statusBarNotifications) {
@@ -40,15 +37,11 @@ public class NotificationService extends NotificationListenerService {
             Log.i(TAG, "Posted by:" + status.getPackageName());
             Log.i(TAG, "tickerText:" + status.getNotification().tickerText);
         }
-
-        /*Log.i(TAG, "ID:" + sbn.getId());
-        Log.i(TAG, "Posted by:" + sbn.getPackageName());
-        Log.i(TAG, "tickerText:" + sbn.getNotification().tickerText);*/
     }
 
     @Override
-    public void onNotificationRemoved(StatusBarNotification sbn){
-        // Implement what you want here
+    public void onNotificationPosted(StatusBarNotification sbn){
+        Log.i(TAG, "Notification received");
     }
 
     @Override

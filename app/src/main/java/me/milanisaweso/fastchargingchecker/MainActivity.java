@@ -1,10 +1,13 @@
 package me.milanisaweso.fastchargingchecker;
 
 import android.content.Context;
-import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,16 +20,19 @@ public class MainActivity extends AppCompatActivity {
             scheduleChargingRequiredJob(this);
         }
 
-        //startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
-
-        //Intent intent=new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-
         //*after job detects charging or onPlugged intent received*
         //
         //if(Notifications detected "Your device is charging slowly")
         //	sendNotificationSound(3);
         //
         //Logic for notifications should be in a separate class
+    }
+
+    public void onClickBtn(View view) {
+        NotificationService.getNotificationService().getNotifications();
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        r.play();
     }
 
     public static void scheduleChargingRequiredJob(Context context) {

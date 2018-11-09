@@ -1,10 +1,7 @@
 package me.milanisaweso.fastchargingchecker;
 
-import android.app.NotificationManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.service.notification.NotificationListenerService;
-import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 public class MyService extends JobService {
