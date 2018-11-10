@@ -16,9 +16,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            scheduleChargingRequiredJob(this);
-        }
+        scheduleChargingRequiredJob(this);
 
         //*after job detects charging or onPlugged intent received*
         //
@@ -29,10 +27,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickBtn(View view) {
-        NotificationService.getNotificationService().getNotifications();
-        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-        r.play();
+        handleNotificationCheck(this);
+    }
+
+    public static void handleNotificationCheck(Context context) {
+        if(NotificationService.getNotificationService() != null) {
+            String s = NotificationService.getNotificationService().getAndroidSystemNotifications().toLowerCase();
+            if(s.contains("charging slowly") || s.contains("charge faster") ||
+                    s.contains("original charger") || s.contains("slow charging") ||
+                    s.contains("slow charge") || s.contains("slow") ||
+                    s.contains("slowly")) {
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone r = RingtoneManager.getRingtone(context, notification);
+                r.play();
+                r.play();
+            }
+        }
     }
 
     public static void scheduleChargingRequiredJob(Context context) {

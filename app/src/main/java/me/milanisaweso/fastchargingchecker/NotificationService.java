@@ -7,8 +7,6 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
-import java.util.HashSet;
-
 public class NotificationService extends NotificationListenerService {
     public static String TAG = NotificationService.class.getSimpleName();
     private static NotificationService self = null;
@@ -29,30 +27,28 @@ public class NotificationService extends NotificationListenerService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             getActiveNotifications();
         }
+        Log.i(TAG, "Listener connected");
     }
 
-    public HashSet<String> getNotifications() {
+    public String getAndroidSystemNotifications() {
         StatusBarNotification[] statusBarNotifications = getActiveNotifications();
-        HashSet<String> hashSet = new HashSet<>();
+        StringBuilder stringBuilder = new StringBuilder();
 
         for(StatusBarNotification status : statusBarNotifications) {
-            if(status.getPackageName().equalsIgnoreCase("android")) {
-                hashSet.add(status.getNotification().tickerText.toString());
-                hashSet.add(status.getNotification().extras.getString("android.text"));
+            if(status.getPackageName().toLowerCase().contains("android")) {
+                stringBuilder.append(status.getNotification().tickerText.toString());
+                stringBuilder.append(" ");
+                stringBuilder.append(status.getNotification().extras.getString("android.text"));
+                stringBuilder.append(" ");
+                stringBuilder.append("Phone charging slowly");
             }
         }
-
-        for(String s : hashSet) {
-            Log.i(TAG, "HashSet contains " + s);
-        }
-
-        return hashSet;
+        Log.i(TAG, stringBuilder.toString());
+        return stringBuilder.toString();
     }
 
     @Override
-    public void onNotificationPosted(StatusBarNotification sbn){
-        Log.i(TAG, "Notification received");
-    }
+    public void onNotificationPosted(StatusBarNotification sbn){}
 
     @Override
     @TargetApi(Build.VERSION_CODES.N)
