@@ -1,6 +1,7 @@
 package me.milanisaweso.fastchargingchecker;
 
 import android.annotation.TargetApi;
+import android.app.Notification;
 import android.content.ComponentName;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,7 +40,9 @@ public class NotificationService extends NotificationListenerService {
             if(status.getPackageName().toLowerCase().contains("android")) {
                 stringBuilder.append(valueOf(status.getNotification().tickerText));
                 stringBuilder.append(" ");
-                stringBuilder.append(valueOf(status.getNotification().extras));
+                stringBuilder.append(valueOf(status.getNotification().extras, Notification.EXTRA_TITLE));
+                stringBuilder.append(" ");
+                stringBuilder.append(valueOf(status.getNotification().extras, Notification.EXTRA_TEXT));
                 stringBuilder.append(" ");
                 stringBuilder.append("Phone charging slowly");
             }
@@ -52,8 +55,8 @@ public class NotificationService extends NotificationListenerService {
         return (obj == null) ? "null" : obj.toString();
     }
 
-    public static String valueOf(Bundle bundle) {
-        return (bundle == null) ? "null" : bundle.getString("android.text");
+    public static String valueOf(Bundle bundle, String notificationComponent) {
+        return (bundle == null) ? "null" : bundle.getString(notificationComponent);
     }
 
     @Override
