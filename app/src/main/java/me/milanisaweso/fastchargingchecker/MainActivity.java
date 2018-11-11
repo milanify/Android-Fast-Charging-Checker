@@ -1,21 +1,44 @@
 package me.milanisaweso.fastchargingchecker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+    private Switch main_switch;
+    private TextView main_switch_text_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        main_switch = findViewById(R.id.main_switch);
+        main_switch_text_view = findViewById(R.id.main_switch_text_view);
+        main_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS));
+            }
+        });
+
         scheduleChargingRequiredJob(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setSwitchBasedOnNotificationAccess();
     }
 
     public void onClickBtn(View view) {
@@ -35,6 +58,23 @@ public class MainActivity extends AppCompatActivity {
                 r.play();
             }
         }
+    }
+
+    public boolean setSwitchBasedOnNotificationAccess() {
+        String notificationListenerString = Settings.Secure.getString(this.getContentResolver(),
+                "enabled_notification_listeners");
+
+        if (notificationListenerString == null ||
+                !notificationListenerString.contains(getPackageName())) {
+            main_switch.setChecked(false);
+            main_switch_text_view.setText(getResources().getString(R.string.switch_off_message));
+        }
+        else {
+            main_switch.setChecked(true);
+            main_switch_text_view.setText(getResources().getString(R.string.switch_on_message));
+        }
+
+        return main_switch.isChecked();
     }
 
     public static void scheduleChargingRequiredJob(Context context) {

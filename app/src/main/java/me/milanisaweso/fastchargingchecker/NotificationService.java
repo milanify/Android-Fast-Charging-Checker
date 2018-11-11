@@ -38,11 +38,11 @@ public class NotificationService extends NotificationListenerService {
 
         for(StatusBarNotification status : statusBarNotifications) {
             if(status.getPackageName().toLowerCase().contains("android")) {
-                stringBuilder.append(valueOf(status.getNotification().tickerText));
+                stringBuilder.append(stringValueOf(status.getNotification().tickerText));
                 stringBuilder.append(" ");
-                stringBuilder.append(valueOf(status.getNotification().extras, Notification.EXTRA_TITLE));
+                stringBuilder.append(stringValueOf(status.getNotification().extras, Notification.EXTRA_TITLE));
                 stringBuilder.append(" ");
-                stringBuilder.append(valueOf(status.getNotification().extras, Notification.EXTRA_TEXT));
+                stringBuilder.append(stringValueOf(status.getNotification().extras, Notification.EXTRA_TEXT));
                 stringBuilder.append(" ");
                 stringBuilder.append("Phone charging slowly");
             }
@@ -51,11 +51,11 @@ public class NotificationService extends NotificationListenerService {
         return stringBuilder.toString();
     }
 
-    public static String valueOf(Object obj) {
+    public static String stringValueOf(Object obj) {
         return (obj == null) ? "null" : obj.toString();
     }
 
-    public static String valueOf(Bundle bundle, String notificationComponent) {
+    public static String stringValueOf(Bundle bundle, String notificationComponent) {
         return (bundle == null) ? "null" : bundle.getString(notificationComponent);
     }
 

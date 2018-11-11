@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Fast Charging Checker</string>
-    <string name="switch_on">Service enabled</string>
-    <string name="switch_off">Enable notification access service (required)</string>
+    <string name="switch_on_message">Service enabled</string>
+    <string name="switch_off_message">Enable notification access service (required)</string>
 </resources>
