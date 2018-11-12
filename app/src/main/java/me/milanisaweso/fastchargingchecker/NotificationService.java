@@ -3,15 +3,20 @@ package me.milanisaweso.fastchargingchecker;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.content.ComponentName;
+import android.content.Context;
+import android.os.BatteryManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
+import static me.milanisaweso.fastchargingchecker.StringHelper.stringValueOf;
+
 public class NotificationService extends NotificationListenerService {
-    public static String TAG = NotificationService.class.getSimpleName();
+    private BatteryManager batteryManager;
+
     private static NotificationService self = null;
+    public static String TAG = NotificationService.class.getSimpleName();
 
     public NotificationService() {
         self = this;
@@ -22,7 +27,7 @@ public class NotificationService extends NotificationListenerService {
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.N)
+    @TargetApi(Build.VERSION_CODES.M)
     public void onListenerConnected() {
         super.onListenerConnected();
 
@@ -30,43 +35,38 @@ public class NotificationService extends NotificationListenerService {
             getActiveNotifications();
         }
         Log.i(TAG, "Listener connected");
+        batteryManager = (BatteryManager) this.getSystemService(Context.BATTERY_SERVICE);
     }
 
     public String getAndroidSystemNotifications() {
         StatusBarNotification[] statusBarNotifications = getActiveNotifications();
         StringBuilder stringBuilder = new StringBuilder();
 
-        for(StatusBarNotification status : statusBarNotifications) {
-            if(status.getPackageName().toLowerCase().contains("android")) {
-                stringBuilder.append(stringValueOf(status.getNotification().tickerText));
+        for(StatusBarNotification notification : statusBarNotifications) {
+            if(notification.getPackageName().toLowerCase().contains("android")) {
+                stringBuilder.append(stringValueOf(notification.getNotification().tickerText));
                 stringBuilder.append(" ");
-                stringBuilder.append(stringValueOf(status.getNotification().extras, Notification.EXTRA_TITLE));
+                stringBuilder.append(stringValueOf(notification.getNotification().extras, Notification.EXTRA_TITLE));
                 stringBuilder.append(" ");
-                stringBuilder.append(stringValueOf(status.getNotification().extras, Notification.EXTRA_TEXT));
+                stringBuilder.append(stringValueOf(notification.getNotification().extras, Notification.EXTRA_TEXT));
                 stringBuilder.append(" ");
-                stringBuilder.append("Phone charging slowly");
             }
         }
-        Log.i(TAG, stringBuilder.toString());
         return stringBuilder.toString();
     }
 
-    public static String stringValueOf(Object obj) {
-        return (obj == null) ? "null" : obj.toString();
-    }
-
-    public static String stringValueOf(Bundle bundle, String notificationComponent) {
-        return (bundle == null) ? "null" : bundle.getString(notificationComponent);
-    }
-
     @Override
-    public void onNotificationPosted(StatusBarNotification sbn){}
+    public void onNotificationPosted(StatusBarNotification sbn){
+        if(batteryManager.isCharging()) {
+            Log.i(TAG, "Charging");
+            //MainActivity.handleNotificationCheck(this);
+        }
+    }
 
     @Override
     @TargetApi(Build.VERSION_CODES.N)
     public void onListenerDisconnected() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // Notification listener disconnected - requesting rebind
             requestRebind(new ComponentName(this, NotificationListenerService.class));
         }
     }

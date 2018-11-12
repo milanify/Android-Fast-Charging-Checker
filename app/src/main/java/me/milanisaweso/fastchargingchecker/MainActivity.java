@@ -7,6 +7,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -25,24 +27,18 @@ public class MainActivity extends AppCompatActivity {
 
         main_switch = findViewById(R.id.main_switch);
         main_switch_text_view = findViewById(R.id.main_switch_text_view);
-        main_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        main_switch.setOnClickListener(new CompoundButton.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onClick(View view) {
                 startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS));
             }
         });
-
-        scheduleChargingRequiredJob(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         setSwitchBasedOnNotificationAccess();
-    }
-
-    public void onClickBtn(View view) {
-        handleNotificationCheck(this);
     }
 
     public static void handleNotificationCheck(Context context) {
@@ -77,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         return main_switch.isChecked();
     }
 
+    /* Not needed, but useful scheduling a recurring job
     public static void scheduleChargingRequiredJob(Context context) {
         new RepeatingJob(context, RepeatingJob.CHARGING_REQUIRED)
                 .setChargingRequired(true).setPersisted(true)
@@ -87,5 +84,5 @@ public class MainActivity extends AppCompatActivity {
         new RepeatingJob(context, RepeatingJob.CHARGING_NOT_REQUIRED)
                 .setChargingRequired(false).setPersisted(true)
                 .setMinimumLatency(secondsToDelay * 1000).buildJobAndSchedule();
-    }
+    }*/
 }
