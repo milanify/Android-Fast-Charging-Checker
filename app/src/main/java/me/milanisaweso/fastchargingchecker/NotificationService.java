@@ -14,7 +14,6 @@ import static me.milanisaweso.fastchargingchecker.StringHelper.stringValueOf;
 
 public class NotificationService extends NotificationListenerService {
     private BatteryManager batteryManager;
-
     private static NotificationService self = null;
     public static String TAG = NotificationService.class.getSimpleName();
 
@@ -31,11 +30,11 @@ public class NotificationService extends NotificationListenerService {
     public void onListenerConnected() {
         super.onListenerConnected();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getActiveNotifications();
+            batteryManager = (BatteryManager) this.getSystemService(Context.BATTERY_SERVICE);
         }
         Log.i(TAG, "Listener connected");
-        batteryManager = (BatteryManager) this.getSystemService(Context.BATTERY_SERVICE);
     }
 
     public String getAndroidSystemNotifications() {

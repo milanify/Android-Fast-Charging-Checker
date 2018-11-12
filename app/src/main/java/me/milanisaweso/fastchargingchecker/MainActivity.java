@@ -8,7 +8,6 @@ import android.net.Uri;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.BatteryManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -64,8 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 !notificationListenerString.contains(getPackageName())) {
             main_switch.setChecked(false);
             main_switch_text_view.setText(getResources().getString(R.string.switch_off_message));
-        }
-        else {
+        } else {
             main_switch.setChecked(true);
             main_switch_text_view.setText(getResources().getString(R.string.switch_on_message));
         }
@@ -73,16 +71,16 @@ public class MainActivity extends AppCompatActivity {
         return main_switch.isChecked();
     }
 
-    /* Not needed, but useful scheduling a recurring job
-    public static void scheduleChargingRequiredJob(Context context) {
-        new RepeatingJob(context, RepeatingJob.CHARGING_REQUIRED)
-                .setChargingRequired(true).setPersisted(true)
-                .buildJobAndSchedule();
-    }
-
-    public static void scheduleChargingNotRequiredJob(Context context, int secondsToDelay) {
-        new RepeatingJob(context, RepeatingJob.CHARGING_NOT_REQUIRED)
-                .setChargingRequired(false).setPersisted(true)
-                .setMinimumLatency(secondsToDelay * 1000).buildJobAndSchedule();
-    }*/
+//     Not needed, but useful scheduling a recurring job
+//    public static void scheduleChargingRequiredJob(Context context) {
+//        new RepeatingJob(context, RepeatingJob.CHARGING_REQUIRED)
+//                .setChargingRequired(true).setPersisted(true)
+//                .buildJobAndSchedule();
+//    }
+//
+//    public static void scheduleChargingNotRequiredJob(Context context, int secondsToDelay) {
+//        new RepeatingJob(context, RepeatingJob.CHARGING_NOT_REQUIRED)
+//                .setChargingRequired(false).setPersisted(true)
+//                .setMinimumLatency(secondsToDelay * 1000).buildJobAndSchedule();
+//    }
 }
