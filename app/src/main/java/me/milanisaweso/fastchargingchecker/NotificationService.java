@@ -4,6 +4,9 @@ import android.annotation.TargetApi;
 import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Context;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.service.notification.NotificationListenerService;
@@ -37,6 +40,14 @@ public class NotificationService extends NotificationListenerService {
         Log.i(TAG, "Listener connected");
     }
 
+    @Override
+    public void onNotificationPosted(StatusBarNotification sbn){
+        if(batteryManager.isCharging() && sbn.getPackageName().toLowerCase().contains("android")) {
+            Log.i(TAG, "Charging");
+            // Check the notification to see if we're fast charging
+        }
+    }
+
     public String getAndroidSystemNotifications() {
         StatusBarNotification[] statusBarNotifications = getActiveNotifications();
         StringBuilder stringBuilder = new StringBuilder();
@@ -54,11 +65,18 @@ public class NotificationService extends NotificationListenerService {
         return stringBuilder.toString();
     }
 
-    @Override
-    public void onNotificationPosted(StatusBarNotification sbn){
-        if(batteryManager.isCharging()) {
-            Log.i(TAG, "Charging");
-            //MainActivity.handleNotificationCheck(this);
+    public void handleNotificationCheck(Context context, String notificationString) {
+        if(getNotificationService() != null) {
+            String notificationService = getNotificationService().getAndroidSystemNotifications().toLowerCase();
+            if(notificationService.contains("charging slowly") || notificationService.contains("charge faster") ||
+                    notificationService.contains("original charger") || notificationService.contains("slow charging") ||
+                    notificationService.contains("slow charge") || notificationService.contains("slow") ||
+                    notificationService.contains("slowly")) {
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone r = RingtoneManager.getRingtone(context, notification);
+                r.play();
+                r.play();
+            }
         }
     }
 

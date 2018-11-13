@@ -1,10 +1,6 @@
 package me.milanisaweso.fastchargingchecker;
 
-import android.content.Context;
 import android.content.Intent;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,21 +34,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         setSwitchBasedOnNotificationAccess();
-    }
-
-    public static void handleNotificationCheck(Context context) {
-        if(NotificationService.getNotificationService() != null) {
-            String s = NotificationService.getNotificationService().getAndroidSystemNotifications().toLowerCase();
-            if(s.contains("charging slowly") || s.contains("charge faster") ||
-                    s.contains("original charger") || s.contains("slow charging") ||
-                    s.contains("slow charge") || s.contains("slow") ||
-                    s.contains("slowly")) {
-                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                Ringtone r = RingtoneManager.getRingtone(context, notification);
-                r.play();
-                r.play();
-            }
-        }
     }
 
     public boolean setSwitchBasedOnNotificationAccess() {
