@@ -9,16 +9,15 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Handler;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.util.Log;
 
 import static me.milanisaweso.fastchargingchecker.StringHelper.stringValueOf;
 
 public class NotificationService extends NotificationListenerService {
     private BatteryManager batteryManager;
     private static NotificationService self = null;
-    public static String TAG = NotificationService.class.getSimpleName();
 
     public NotificationService() {
         self = this;
@@ -37,14 +36,47 @@ public class NotificationService extends NotificationListenerService {
             getActiveNotifications();
             batteryManager = (BatteryManager) this.getSystemService(Context.BATTERY_SERVICE);
         }
-        Log.i(TAG, "Listener connected");
     }
 
     @Override
-    public void onNotificationPosted(StatusBarNotification sbn){
-        if(batteryManager.isCharging() && sbn.getPackageName().toLowerCase().contains("android")) {
-            Log.i(TAG, "Charging");
-            // Check the notification to see if we're fast charging
+    public void onNotificationPosted(StatusBarNotification statusBarNotification) {
+        if(isAndroidSystemNotification(statusBarNotification)) {
+            StringBuilder stringBuilder = new StringBuilder();
+            addNotificationToStringBuilder(statusBarNotification, stringBuilder);
+            handleNotificationCheck(this, stringBuilder.toString());
+        }
+    }
+
+    public boolean isAndroidSystemNotification(StatusBarNotification statusBarNotification) {
+        return  statusBarNotification.getPackageName().toLowerCase().contains("android");
+    }
+
+    public void addNotificationToStringBuilder(StatusBarNotification statusBarNotification,
+                                               StringBuilder stringBuilder) {
+        Notification notification = statusBarNotification.getNotification();
+        stringBuilder.append(stringValueOf(notification.tickerText));
+        stringBuilder.append(" ");
+        stringBuilder.append(stringValueOf(notification.extras, Notification.EXTRA_TITLE));
+        stringBuilder.append(" ");
+        stringBuilder.append(stringValueOf(notification.extras, Notification.EXTRA_TEXT));
+        stringBuilder.append(" ");
+    }
+
+    public void handleNotificationCheck(Context context, String notificationString) {
+        if(notificationString.contains("fast charging") ||
+                notificationString.contains("fast charger") ||
+                notificationString.contains("fast-charging") ||
+                notificationString.contains("fast-charger")) {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            final Ringtone r = RingtoneManager.getRingtone(context, notification);
+            r.play();
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    r.play();
+                }
+            }, 1000);
         }
     }
 
@@ -53,31 +85,11 @@ public class NotificationService extends NotificationListenerService {
         StringBuilder stringBuilder = new StringBuilder();
 
         for(StatusBarNotification notification : statusBarNotifications) {
-            if(notification.getPackageName().toLowerCase().contains("android")) {
-                stringBuilder.append(stringValueOf(notification.getNotification().tickerText));
-                stringBuilder.append(" ");
-                stringBuilder.append(stringValueOf(notification.getNotification().extras, Notification.EXTRA_TITLE));
-                stringBuilder.append(" ");
-                stringBuilder.append(stringValueOf(notification.getNotification().extras, Notification.EXTRA_TEXT));
-                stringBuilder.append(" ");
+            if(isAndroidSystemNotification(notification)) {
+                addNotificationToStringBuilder(notification, stringBuilder);
             }
         }
         return stringBuilder.toString();
-    }
-
-    public void handleNotificationCheck(Context context, String notificationString) {
-        if(getNotificationService() != null) {
-            String notificationService = getNotificationService().getAndroidSystemNotifications().toLowerCase();
-            if(notificationService.contains("charging slowly") || notificationService.contains("charge faster") ||
-                    notificationService.contains("original charger") || notificationService.contains("slow charging") ||
-                    notificationService.contains("slow charge") || notificationService.contains("slow") ||
-                    notificationService.contains("slowly")) {
-                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                Ringtone r = RingtoneManager.getRingtone(context, notification);
-                r.play();
-                r.play();
-            }
-        }
     }
 
     @Override
