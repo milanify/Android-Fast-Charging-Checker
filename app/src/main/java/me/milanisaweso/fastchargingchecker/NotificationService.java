@@ -9,9 +9,10 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
-import android.os.Handler;
+import android.os.SystemClock;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.util.Log;
 
 import static me.milanisaweso.fastchargingchecker.StringHelper.stringValueOf;
 
@@ -43,7 +44,7 @@ public class NotificationService extends NotificationListenerService {
         if(isAndroidSystemNotification(statusBarNotification)) {
             StringBuilder stringBuilder = new StringBuilder();
             addNotificationToStringBuilder(statusBarNotification, stringBuilder);
-            handleNotificationCheck(this, stringBuilder.toString());
+            handleNotificationCheck(this, stringBuilder.toString().toLowerCase());
         }
     }
 
@@ -68,15 +69,10 @@ public class NotificationService extends NotificationListenerService {
                 notificationString.contains("fast-charging") ||
                 notificationString.contains("fast-charger")) {
             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            final Ringtone r = RingtoneManager.getRingtone(context, notification);
+            final Ringtone r = RingtoneManager.getRingtone(context.getApplicationContext(), notification);
             r.play();
-
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    r.play();
-                }
-            }, 1000);
+            SystemClock.sleep(500);
+            r.stop();
         }
     }
 
