@@ -4,11 +4,10 @@ import android.annotation.TargetApi;
 import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Context;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
+import android.media.MediaPlayer;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.SystemClock;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 
@@ -41,10 +40,6 @@ public class NotificationService extends NotificationListenerService {
     @Override
     public void onNotificationPosted(StatusBarNotification statusBarNotification) {
         if(isAndroidSystemNotification(statusBarNotification) && !firstChargingNotificationShown) {
-            //System.out.println("Notification with id " + stringValueOf(statusBarNotification.getNotification().tickerText)
-            // + " " + stringValueOf(statusBarNotification.getNotification().extras, Notification.EXTRA_TITLE) +
-           //         " " + stringValueOf(statusBarNotification.getNotification().extras, Notification.EXTRA_TEXT));
-
             StringBuilder stringBuilder = new StringBuilder();
             addNotificationToStringBuilder(statusBarNotification, stringBuilder);
             handleNotificationCheck(this, stringBuilder.toString().toLowerCase());
@@ -72,14 +67,14 @@ public class NotificationService extends NotificationListenerService {
                 notificationString.contains("fast-charging") ||
                 notificationString.contains("fast-charger")) {
             firstChargingNotificationShown = true;
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            final Ringtone r = RingtoneManager.getRingtone(context, notification);
-            r.play();
+            MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.fast_charge_sound);
+            mediaPlayer.start();
         }
     }
 
     @Override
     public void onNotificationRemoved(StatusBarNotification statusBarNotification) {
+        SystemClock.sleep(1000);
         if(!batteryManager.isCharging()) {
             firstChargingNotificationShown = false;
         }
