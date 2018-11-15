@@ -71,10 +71,10 @@ public class NotificationService extends NotificationListenerService {
                 notificationString.contains("fast charger") ||
                 notificationString.contains("fast-charging") ||
                 notificationString.contains("fast-charger")) {
+            firstChargingNotificationShown = true;
             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             final Ringtone r = RingtoneManager.getRingtone(context, notification);
             r.play();
-            firstChargingNotificationShown = true;
         }
     }
 
