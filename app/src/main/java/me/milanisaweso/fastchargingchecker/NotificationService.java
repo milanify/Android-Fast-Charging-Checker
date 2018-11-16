@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -14,8 +13,6 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-
-import java.io.IOException;
 
 import static me.milanisaweso.fastchargingchecker.StringHelper.stringValueOf;
 
@@ -74,14 +71,19 @@ public class NotificationService extends NotificationListenerService {
                 notificationString.contains("fast-charger")) {
             firstChargingNotificationShown = true;
 
-            final AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            final int userVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
-            audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION) / 2, 0);
+            final AudioManager audioManager = (AudioManager)
+                    getSystemService(Context.AUDIO_SERVICE);
+
+            final int soundType = AudioManager.STREAM_NOTIFICATION;
+            final int userVolume = audioManager.getStreamVolume(soundType);
+            final int maxVolumeHalved = audioManager.getStreamMaxVolume(soundType) / 2;
+
+            audioManager.setStreamVolume(soundType, maxVolumeHalved, 0);
 
             final MediaPlayer mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                    .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
+                    .setLegacyStreamType(soundType)
                     .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                     .build());
 
@@ -91,15 +93,14 @@ public class NotificationService extends NotificationListenerService {
             try {
                 mediaPlayer.setDataSource(context, path);
                 mediaPlayer.prepare();
-            } catch(Exception e) { }
-
+            } catch(Exception e) { audioManager.setStreamVolume(soundType, userVolume, 0); }
 
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
             {
                 @Override
                 public void onCompletion(MediaPlayer mp)
                 {
-                    audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, userVolume, 0);
+                    audioManager.setStreamVolume(soundType, userVolume, 0);
                 }
             });
 
