@@ -11,10 +11,15 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+/** The single, main user interface */
 public class MainActivity extends AppCompatActivity {
     private Switch main_switch;
     private TextView main_switch_text_view;
 
+    /**
+     * Sets the View components' state
+     * @param savedInstanceState the activity's state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,12 +35,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Make sure the View components' states are accurate when returning to the application
+     */
     @Override
     protected void onResume() {
         super.onResume();
         setSwitchBasedOnNotificationAccess();
     }
 
+    /**
+     * If we are granted notification access, properly set the switch state and text view message
+     * @return whether or not we have notification access
+     */
     public boolean setSwitchBasedOnNotificationAccess() {
         String notificationListenerString = Settings.Secure.getString(this.getContentResolver(),
                 "enabled_notification_listeners");
