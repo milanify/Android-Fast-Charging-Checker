@@ -4,12 +4,18 @@ import android.annotation.TargetApi;
 import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.SystemClock;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+
+import java.io.IOException;
 
 import static me.milanisaweso.fastchargingchecker.StringHelper.stringValueOf;
 
@@ -67,7 +73,36 @@ public class NotificationService extends NotificationListenerService {
                 notificationString.contains("fast-charging") ||
                 notificationString.contains("fast-charger")) {
             firstChargingNotificationShown = true;
-            MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.fast_charge_sound);
+
+            final AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            final int userVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+            audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION) / 2, 0);
+
+            final MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                    .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build());
+
+            Uri path = Uri.parse("android.resource://" +
+                    "me.milanisaweso.fastchargingchecker/" +
+                    R.raw.fast_charge_sound);
+            try {
+                mediaPlayer.setDataSource(context, path);
+                mediaPlayer.prepare();
+            } catch(Exception e) { }
+
+
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
+            {
+                @Override
+                public void onCompletion(MediaPlayer mp)
+                {
+                    audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, userVolume, 0);
+                }
+            });
+
             mediaPlayer.start();
         }
     }
