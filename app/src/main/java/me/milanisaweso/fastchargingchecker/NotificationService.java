@@ -8,7 +8,6 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.BatteryManager;
 import android.os.Build;
 import android.os.SystemClock;
 import android.service.notification.NotificationListenerService;
@@ -18,7 +17,7 @@ import static me.milanisaweso.fastchargingchecker.StringHelper.stringValueOf;
 
 /** Service to read notifications */
 public class NotificationService extends NotificationListenerService {
-    private BatteryManager batteryManager;
+    private ChargingUtility chargingUtility;
     private boolean firstChargingNotificationShown = false;
     private static NotificationService self = null;
 
@@ -33,8 +32,8 @@ public class NotificationService extends NotificationListenerService {
     }
 
     /**
-     * When the service is running, do a necessary call to getActiveNotifications()
-     * then create the BatteryManager object (the method this object uses requires Android.M)
+     * When the service is running, do a necessary initialization call to getActiveNotifications()
+     * then create the ChargingUtility object
      */
     @Override
     @TargetApi(Build.VERSION_CODES.M)
@@ -43,6 +42,7 @@ public class NotificationService extends NotificationListenerService {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getActiveNotifications();
+            chargingUtility = new ChargingUtility(this);
         }
     }
 
@@ -147,16 +147,15 @@ public class NotificationService extends NotificationListenerService {
      * When the fast charging notification is removed (device unplugged from charging),
      * then set the firstChargingNotificationShown back to false so that we can read new charges
      *
-     * Sleeps for 1 second to allow the batteryManager.isCharging() call to work properly when
+     * Sleeps for 1 second to allow the chargingUtility.isCharging() call to work properly when
      * the device is unplugged, because the device may still be in the charging state for a split
      * second after the charging notification is removed
      * @param statusBarNotification the notification object
      */
     @Override
     public void onNotificationRemoved(StatusBarNotification statusBarNotification) {
-        batteryManager = (BatteryManager) this.getSystemService(Context.BATTERY_SERVICE);
         SystemClock.sleep(1000);
-        if(!batteryManager.isCharging()) {
+        if(!chargingUtility.isCharging()) {
             firstChargingNotificationShown = false;
         }
     }
