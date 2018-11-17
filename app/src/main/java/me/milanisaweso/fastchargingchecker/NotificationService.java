@@ -43,7 +43,6 @@ public class NotificationService extends NotificationListenerService {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getActiveNotifications();
-            batteryManager = (BatteryManager) this.getSystemService(Context.BATTERY_SERVICE);
         }
     }
 
@@ -155,6 +154,7 @@ public class NotificationService extends NotificationListenerService {
      */
     @Override
     public void onNotificationRemoved(StatusBarNotification statusBarNotification) {
+        batteryManager = (BatteryManager) this.getSystemService(Context.BATTERY_SERVICE);
         SystemClock.sleep(1000);
         if(!batteryManager.isCharging()) {
             firstChargingNotificationShown = false;
