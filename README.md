@@ -5,11 +5,11 @@ Checks if your phone is properly fast charging, a notification sound is played w
 https://play.google.com/store/apps/details?id=me.milanisaweso.fastchargingchecker
 
 ## Preview
-![alt tag](https://github.com/milan102/Android-Fast-Charging-Checker/blob/master/preview/screenshot_1.png)
+<img src="https://github.com/milan102/Android-Fast-Charging-Checker/blob/master/preview/screenshot_1.png" width="50%">
 
-![alt tag](https://github.com/milan102/Android-Fast-Charging-Checker/blob/master/preview/screenshot_2.png)
+<img src="https://github.com/milan102/Android-Fast-Charging-Checker/blob/master/preview/screenshot_2.png" width="50%">
 
-![alt tag](https://github.com/milan102/Android-Fast-Charging-Checker/blob/master/preview/screenshot_3.png)
+<img src="https://github.com/milan102/Android-Fast-Charging-Checker/blob/master/preview/screenshot_3.png" width="50%">
 
 
 ## Notes
